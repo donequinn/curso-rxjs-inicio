@@ -1,11 +1,14 @@
-import { fromEvent } from 'rxjs';
+import { range, fromEvent } from 'rxjs';
+import { map, pluck } from 'rxjs/operators';
 
-const src1$ = fromEvent<MouseEvent>(document, 'click')
-const src2$ = fromEvent<KeyboardEvent>(document, 'keyup');
+range(1, 5).pipe(map<number, string>(val => (val * 10).toString())).subscribe(console.log);
 
-const observer = {
-    next: val => console.log('next', val)
-};
+const keyup$ = fromEvent<KeyboardEvent>(document, 'keyup');
 
-src1$.subscribe(({ x, y }) => { console.log(x, y); });
-src2$.subscribe(evento => { console.log(evento.key) });
+const keyupCode$ = keyup$.pipe(map(event => event.code));
+
+const keyupPluck$ = keyup$.pipe(pluck('target','baseURI'));
+
+keyup$.subscribe(console.log);
+keyupCode$.subscribe(code => console.log('map', code));
+keyupPluck$.subscribe(code => console.log('pluck', code));
